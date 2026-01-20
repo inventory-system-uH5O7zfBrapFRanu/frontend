@@ -565,6 +565,7 @@ function renderInventoryTable(items) {
             <td>${i.product?.name || 'N/A'}</td>
             <td><code>${i.product?.sku || 'N/A'}</code></td>
             <td><strong>${i.quantity}</strong></td>
+            <td>${i.min_quantity || 10}</td>
             <td>${i.location || '-'}</td>
             <td>
                 <span class="badge ${getStockStatusClass(i.stock_status)}">
@@ -574,7 +575,7 @@ function renderInventoryTable(items) {
             <td>
                 <div class="action-btns">
                     <button class="action-btn stock" onclick="openStockModal(${i.product_id})" title="Adjust Stock">📦</button>
-                    <button class="action-btn edit" onclick="openInventoryEditModal(${i.id}, '${i.location || ''}')" title="Edit Location">📍</button>
+                    <button class="action-btn edit" onclick="openInventoryEditModal(${i.id}, '${i.location || ''}', ${i.min_quantity || 10})" title="Edit Inventory">✏️</button>
                 </div>
             </td>
         </tr>
@@ -947,7 +948,7 @@ async function adjustStock(event) {
     }
 }
 
-function openInventoryEditModal(inventoryId, location) {
+function openInventoryEditModal(inventoryId, location, minQuantity) {
     state.editingId = inventoryId;
 
     const modal = document.getElementById('inventoryEditModal');
@@ -956,7 +957,7 @@ function openInventoryEditModal(inventoryId, location) {
             <div class="modal" id="inventoryEditModal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h2>Edit Location</h2>
+                        <h2>Edit Inventory</h2>
                         <button class="modal-close" onclick="closeModal()">&times;</button>
                     </div>
                     <form id="inventoryEditForm" onsubmit="updateInventoryLocation(event)">
@@ -965,7 +966,12 @@ function openInventoryEditModal(inventoryId, location) {
                             <div class="form-group">
                                 <label for="edit_location">Location</label>
                                 <input type="text" id="edit_location" name="location" placeholder="e.g., Warehouse A1">
-                        </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_min_quantity">Minimum Quantity</label>
+                                <input type="number" id="edit_min_quantity" name="min_quantity" min="0" placeholder="e.g., 10">
+                                <small class="form-hint">Alert ketika stock di bawah nilai ini</small>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -981,6 +987,7 @@ function openInventoryEditModal(inventoryId, location) {
 
     document.getElementById('edit_inventory_id').value = inventoryId;
     document.getElementById('edit_location').value = location;
+    document.getElementById('edit_min_quantity').value = minQuantity || 10;
 
     // Show modal overlay and modal
     elements.modalOverlay.classList.add('active');
@@ -996,11 +1003,12 @@ async function updateInventoryLocation(event) {
     const inventoryId = formData.get('inventory_id');
     const data = {
         location: formData.get('location') || null,
+        min_quantity: parseInt(formData.get('min_quantity')) || 10,
     };
 
     try {
         await inventoryApi.update(inventoryId, data);
-        showToast('success', 'Success', 'Location updated successfully');
+        showToast('success', 'Success', 'Inventory updated successfully');
         closeModal();
         loadInventory();
         loadInventorySummary();
