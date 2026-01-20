@@ -6,44 +6,66 @@
  * - J.620100.006.01: Merancang user experience
  */
 
-/* ===== CSS Variables ===== */
+/* ===== CSS Variables - Modern SaaS Light Theme ===== */
 :root {
-    /* Colors */
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --secondary: #64748b;
-    --success: #22c55e;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #3b82f6;
-    
-    /* Neutrals */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --border-color: #334155;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
-    
+    /* Primary Colors */
+    --primary: #4F46E5;
+    /* Indigo */
+    --primary-dark: #4338CA;
+    /* Darker Indigo */
+    --primary-light: #818CF8;
+    /* Soft Violet */
+    --secondary: #64748B;
+    /* Slate */
+    --accent: #0EA5E9;
+    /* Sky Blue */
+
+    /* Status Colors */
+    --success: #10B981;
+    /* Emerald */
+    --warning: #F59E0B;
+    /* Amber */
+    --danger: #EF4444;
+    /* Red */
+    --info: #0EA5E9;
+    /* Sky Blue */
+
+    /* Light Theme Neutrals */
+    --bg-primary: #F3F4F6;
+    /* Ghost White */
+    --bg-secondary: #FFFFFF;
+    /* Pure White */
+    --bg-tertiary: #E5E7EB;
+    /* Light Gray */
+    --text-primary: #374151;
+    /* Charcoal */
+    --text-secondary: #6B7280;
+    /* Gray */
+    --text-muted: #9CA3AF;
+    /* Light Gray Text */
+    --border-color: #E5E7EB;
+    /* Light Border */
+
+    /* Shadows - Softer for light theme */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+
     /* Transitions */
     --transition-fast: 150ms ease;
     --transition-normal: 300ms ease;
-    
+
     /* Sizing */
     --sidebar-width: 260px;
     --header-height: 64px;
-    --border-radius: 8px;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
 }
 
 /* ===== Reset & Base ===== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -95,6 +117,7 @@ body {
     border-right: 1px solid var(--border-color);
     z-index: 100;
     transition: transform var(--transition-normal);
+    box-shadow: var(--shadow-md);
 }
 
 .sidebar-header {
@@ -144,9 +167,10 @@ body {
 }
 
 .nav-item.active {
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--primary-light);
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--primary);
     border-left-color: var(--primary);
+    font-weight: 600;
 }
 
 .nav-icon {
@@ -183,8 +207,15 @@ body {
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 /* ===== Main Content ===== */
@@ -269,8 +300,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===== Stats Grid ===== */
@@ -309,7 +347,7 @@ body {
 }
 
 .stat-icon.products {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    background: linear-gradient(135deg, #4F46E5, #4338CA);
 }
 
 .stat-icon.categories {
@@ -415,7 +453,7 @@ body {
 }
 
 .data-table tbody tr:hover {
-    background: rgba(99, 102, 241, 0.05);
+    background: rgba(79, 70, 229, 0.05);
 }
 
 .data-table td {
@@ -513,7 +551,7 @@ body {
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
 }
 
 .btn-secondary {
@@ -705,19 +743,19 @@ body {
     .sidebar {
         transform: translateX(-100%);
     }
-    
+
     .sidebar.open {
         transform: translateX(0);
     }
-    
+
     .main-content {
         margin-left: 0;
     }
-    
+
     .menu-toggle {
         display: block;
     }
-    
+
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
@@ -727,20 +765,20 @@ body {
     .stats-grid {
         grid-template-columns: 1fr 1fr;
     }
-    
+
     .search-box {
         display: none;
     }
-    
+
     .page-header {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .filters {
         flex-direction: column;
     }
-    
+
     .search-input,
     .filter-select {
         width: 100%;

@@ -469,7 +469,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+    background: linear-gradient(135deg, #4F46E5 0%, #0EA5E9 50%, #818CF8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -502,14 +502,12 @@
 .auth-logo .logo-text {
     font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white;
+    -webkit-text-fill-color: white;
 }
 
 .auth-subtitle {
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 0.9375rem;
 }
 
