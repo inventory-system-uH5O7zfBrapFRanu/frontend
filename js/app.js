@@ -289,7 +289,7 @@ async function loadProducts() {
         if (categoryId) params.category_id = categoryId;
 
         const stockFilter = document.getElementById('stockFilter')?.value;
-        if (stockFilter === 'low') params.is_active = true; // Would need backend support
+        if (stockFilter) params.stock_status = stockFilter;
 
         const data = await productsApi.getAll(params);
         state.products = { ...state.products, items: data.items, total: data.total };
@@ -517,6 +517,9 @@ async function loadInventory() {
             page_size: state.inventory.pageSize,
         };
 
+        const stockStatusFilter = document.getElementById('inventoryStockFilter')?.value;
+        if (stockStatusFilter) params.stock_status = stockStatusFilter;
+
         const data = await inventoryApi.getAll(params);
         state.inventory = { ...state.inventory, items: data.items, total: data.total };
 
@@ -551,7 +554,6 @@ function renderInventoryTable(items) {
             <td>${i.product?.name || 'N/A'}</td>
             <td><code>${i.product?.sku || 'N/A'}</code></td>
             <td><strong>${i.quantity}</strong></td>
-            <td>${i.min_quantity}</td>
             <td>${i.location || '-'}</td>
             <td>
                 <span class="badge ${getStockStatusClass(i.stock_status)}">
@@ -561,11 +563,17 @@ function renderInventoryTable(items) {
             <td>
                 <div class="action-btns">
                     <button class="action-btn stock" onclick="openStockModal(${i.product_id})" title="Adjust Stock">📦</button>
+                    <button class="action-btn edit" onclick="openInventoryEditModal(${i.id}, '${i.location || ''}')" title="Edit Location">📍</button>
                 </div>
             </td>
         </tr>
     `).join('');
 }
+
+// Initialize inventory filter listener
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('inventoryStockFilter')?.addEventListener('change', () => loadInventory());
+});
 
 async function loadInventorySummary() {
     try {
@@ -923,6 +931,68 @@ async function adjustStock(event) {
         loadInventorySummary();
         loadDashboard();
 
+    } catch (error) {
+        showToast('error', 'Error', error.message);
+    }
+}
+
+function openInventoryEditModal(inventoryId, location) {
+    state.editingId = inventoryId;
+
+    const modal = document.getElementById('inventoryEditModal');
+    if (!modal) {
+        const modalHTML = `
+            <div class="modal" id="inventoryEditModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit Location</h2>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <form id="inventoryEditForm" onsubmit="updateInventoryLocation(event)">
+                        <input type="hidden" name="inventory_id" id="edit_inventory_id">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="edit_location">Location</label>
+                                <input type="text" id="edit_location" name="location" placeholder="e.g., Warehouse A1">
+                        </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        // Insert into modalOverlay, not body
+        elements.modalOverlay.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    document.getElementById('edit_inventory_id').value = inventoryId;
+    document.getElementById('edit_location').value = location;
+
+    // Show modal overlay and modal
+    elements.modalOverlay.classList.add('active');
+    document.getElementById('inventoryEditModal').classList.add('active');
+}
+
+async function updateInventoryLocation(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    const inventoryId = formData.get('inventory_id');
+    const data = {
+        location: formData.get('location') || null,
+    };
+
+    try {
+        await inventoryApi.update(inventoryId, data);
+        showToast('success', 'Success', 'Location updated successfully');
+        closeModal();
+        loadInventory();
+        loadInventorySummary();
     } catch (error) {
         showToast('error', 'Error', error.message);
     }

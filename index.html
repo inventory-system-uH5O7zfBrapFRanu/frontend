@@ -351,12 +351,11 @@
             <section class="page" id="inventoryPage">
                 <div class="page-header">
                     <div class="filters">
-                        <input type="text" placeholder="Search inventory..." id="inventorySearch" class="search-input">
-                        <select id="inventoryFilter" class="filter-select">
+                        <select id="inventoryStockFilter" class="filter-select">
                             <option value="">All Status</option>
-                            <option value="low">Low Stock</option>
-                            <option value="out">Out of Stock</option>
-                            <option value="ok">Healthy</option>
+                            <option value="in_stock">In Stock</option>
+                            <option value="low_stock">Low Stock</option>
+                            <option value="out_of_stock">Out of Stock</option>
                         </select>
                     </div>
                 </div>
@@ -389,7 +388,6 @@
                                     <th>Product</th>
                                     <th>SKU</th>
                                     <th>Quantity</th>
-                                    <th>Min Qty</th>
                                     <th>Location</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -397,7 +395,7 @@
                             </thead>
                             <tbody id="inventoryTableBody">
                                 <tr>
-                                    <td colspan="7" class="loading">Loading...</td>
+                                    <td colspan="6" class="loading">Loading...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -517,10 +515,6 @@
                         <div class="form-group">
                             <label for="initialStock">Initial Stock</label>
                             <input type="number" id="initialStock" name="initial_stock" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="minStock">Min Stock</label>
-                            <input type="number" id="minStock" name="min_stock" min="0" value="10">
                         </div>
                     </div>
                 </div>
