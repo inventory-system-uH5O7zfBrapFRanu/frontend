@@ -39,8 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only load dashboard if authenticated (handled by auth.js checkAuth)
     // loadDashboard() will be called by showDashboard() after successful login
 
-    // Periodic health check
+    // Periodic API health check (every 30 seconds for status indicator)
     setInterval(checkApiHealth, 30000);
+
+    // Background system health check every 30 minutes (1800000ms)
+    // Shows toast alerts on any page if there are system issues
+    setTimeout(() => {
+        checkSystemAlerts();
+        setInterval(checkSystemAlerts, 30 * 60 * 1000); // 30 minutes
+    }, 5000); // Initial check after 5 seconds
 });
 
 /**
@@ -133,7 +140,8 @@ function navigateTo(page) {
         categories: 'Categories',
         suppliers: 'Suppliers',
         inventory: 'Inventory',
-        logs: 'Activity Log'
+        logs: 'Activity Log',
+        system: 'System Monitor'
     };
     elements.pageTitle.textContent = titles[page] || 'Dashboard';
 
@@ -158,6 +166,9 @@ function navigateTo(page) {
             break;
         case 'logs':
             loadLogs();
+            break;
+        case 'system':
+            loadSystemData();
             break;
     }
 
@@ -1143,3 +1154,191 @@ function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
+
+// ===== System Monitor Functions =====
+// J.620100.044.01: Alert notification
+// J.620100.045.01: Resource monitoring
+
+async function loadSystemData() {
+    try {
+        // Load all system data in parallel
+        const [health, resources, metrics] = await Promise.all([
+            systemApi.getHealth(),
+            systemApi.getResources(),
+            systemApi.getMetrics()
+        ]);
+
+        updateHealthBanner(health);
+        updateAlerts(health.alerts || []);
+        updateResources(resources);
+        updateMetrics(metrics);
+
+    } catch (error) {
+        console.error('Failed to load system data:', error);
+        showToast('error', 'Error', 'Failed to load system data');
+    }
+}
+
+function updateHealthBanner(health) {
+    const banner = document.getElementById('systemHealthBanner');
+    if (!banner) return;
+
+    // Remove all status classes
+    banner.classList.remove('healthy', 'warning', 'critical');
+
+    const icons = {
+        healthy: '✅',
+        warning: '⚠️',
+        critical: '🚨'
+    };
+
+    const texts = {
+        healthy: 'All systems operational',
+        warning: 'Some systems need attention',
+        critical: 'Critical issues detected'
+    };
+
+    banner.classList.add(health.status);
+    banner.querySelector('.health-icon').textContent = icons[health.status] || '❓';
+    banner.querySelector('.health-text').textContent = texts[health.status] || 'Unknown status';
+}
+
+function updateAlerts(alerts) {
+    const section = document.getElementById('alertsSection');
+    const list = document.getElementById('alertsList');
+
+    if (!section || !list) return;
+
+    if (alerts.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    list.innerHTML = alerts.map(alert => `
+        <div class="alert-item ${alert.level}">
+            <span class="alert-message">${alert.message}</span>
+            <span class="alert-time">${formatDateTime(alert.timestamp)}</span>
+        </div>
+    `).join('');
+
+    // Show toast for critical alerts
+    const criticalAlerts = alerts.filter(a => a.level === 'critical');
+    if (criticalAlerts.length > 0) {
+        showToast('error', 'Critical Alert', criticalAlerts[0].message);
+    }
+}
+
+function updateResources(resources) {
+    // CPU
+    const cpuPercent = resources.cpu?.percent || 0;
+    document.getElementById('cpuUsage').textContent = `${cpuPercent.toFixed(1)}%`;
+    const cpuProgress = document.getElementById('cpuProgress');
+    cpuProgress.style.width = `${cpuPercent}%`;
+    updateProgressClass(cpuProgress, cpuPercent);
+
+    // Memory
+    const memPercent = resources.memory?.percent || 0;
+    document.getElementById('memoryUsage').textContent = `${memPercent.toFixed(1)}%`;
+    const memProgress = document.getElementById('memoryProgress');
+    memProgress.style.width = `${memPercent}%`;
+    updateProgressClass(memProgress, memPercent);
+    document.getElementById('memoryDetail').textContent =
+        `${resources.memory?.used_gb || 0} / ${resources.memory?.total_gb || 0} GB`;
+
+    // Disk
+    const diskPercent = resources.disk?.percent || 0;
+    document.getElementById('diskUsage').textContent = `${diskPercent.toFixed(1)}%`;
+    const diskProgress = document.getElementById('diskProgress');
+    diskProgress.style.width = `${diskPercent}%`;
+    updateProgressClass(diskProgress, diskPercent);
+    document.getElementById('diskDetail').textContent =
+        `${resources.disk?.used_gb || 0} / ${resources.disk?.total_gb || 0} GB`;
+
+    // Database status is from health check
+    document.getElementById('dbStatus').textContent = 'Connected';
+}
+
+function updateProgressClass(element, percent) {
+    element.classList.remove('warning', 'critical');
+    if (percent > 90) {
+        element.classList.add('critical');
+    } else if (percent > 80) {
+        element.classList.add('warning');
+    }
+}
+
+function updateMetrics(metrics) {
+    document.getElementById('appUptime').textContent = metrics.uptime?.formatted || '--';
+    document.getElementById('totalRequests').textContent =
+        (metrics.requests?.total || 0).toLocaleString();
+    document.getElementById('errorRate').textContent =
+        `${metrics.requests?.error_rate || 0}%`;
+    document.getElementById('avgResponseTime').textContent =
+        `${metrics.performance?.avg_response_time_ms || 0} ms`;
+}
+
+/**
+ * Background System Health Check
+ * Runs every 30 minutes and shows toast notifications for any alerts
+ * Also updates the badge counter on System Monitor menu
+ */
+async function checkSystemAlerts() {
+    // Only check if user is authenticated
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    try {
+        const health = await systemApi.getHealth();
+        const alerts = health.alerts || [];
+
+        // Update badge counter on System Monitor menu
+        updateSystemAlertBadge(alerts.length);
+
+        // Show toast notifications for alerts
+        if (alerts.length > 0) {
+            // Group by level
+            const criticalAlerts = alerts.filter(a => a.level === 'critical');
+            const warningAlerts = alerts.filter(a => a.level === 'warning');
+
+            // Show critical alerts first
+            criticalAlerts.forEach(alert => {
+                showToast('error', '🚨 System Alert', alert.message);
+            });
+
+            // Show warning alerts (max 2 to avoid spam)
+            warningAlerts.slice(0, 2).forEach(alert => {
+                showToast('warning', '⚠️ Warning', alert.message);
+            });
+        }
+
+        console.log(`[System Health] Status: ${health.status}, Alerts: ${alerts.length}`);
+
+    } catch (error) {
+        console.error('Background health check failed:', error);
+        // Don't show toast for this error to avoid annoying users
+    }
+}
+
+/**
+ * Update the badge counter on System Monitor menu item
+ */
+function updateSystemAlertBadge(count) {
+    const menuItem = document.querySelector('[data-page="system"]');
+    if (!menuItem) return;
+
+    // Remove existing badge
+    const existingBadge = menuItem.querySelector('.alert-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+
+    // Add new badge if there are alerts
+    if (count > 0) {
+        const badge = document.createElement('span');
+        badge.className = 'alert-badge';
+        badge.textContent = count;
+        menuItem.appendChild(badge);
+    }
+}
+

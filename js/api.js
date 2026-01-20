@@ -202,6 +202,18 @@ const healthApi = {
 };
 
 /**
+ * System Monitor API
+ * J.620100.044.01: Alert notification
+ * J.620100.045.01: Resource monitoring
+ */
+const systemApi = {
+    getHealth: () => api.get('/system/health'),
+    getResources: () => api.get('/system/resources'),
+    getAlerts: () => api.get('/system/alerts'),
+    getMetrics: () => api.get('/system/metrics'),
+};
+
+/**
  * Format currency to IDR
  * @param {number} amount 
  * @returns {string}
