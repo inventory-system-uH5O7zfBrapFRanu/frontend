@@ -1057,41 +1057,74 @@ function renderPagination(type, data) {
     const container = document.getElementById(`${type}Pagination`);
     if (!container) return;
 
-    const { total, page, page_size, total_pages } = data;
+    const { total = 0, page = 1, page_size = 10, total_pages = 1 } = data;
+    const pageSizes = [5, 10, 20, 50, 100];
 
-    if (total_pages <= 1) {
-        container.innerHTML = '';
-        return;
+    // Wrapper
+    let html = '<div class="pagination-wrapper">';
+
+    // Left side: info text and page size selector
+    html += '<div class="pagination-left">';
+    const startItem = total > 0 ? (page - 1) * page_size + 1 : 0;
+    const endItem = Math.min(page * page_size, total);
+    html += `<span class="pagination-info">Showing ${startItem}-${endItem} of ${total} items</span>`;
+
+    // Page size selector
+    html += `<select class="pagination-select" onchange="changePageSize('${type}', this.value)">`;
+    pageSizes.forEach(size => {
+        html += `<option value="${size}" ${size === page_size ? 'selected' : ''}>${size} / page</option>`;
+    });
+    html += '</select>';
+    html += '</div>';
+
+    // Right side: navigation buttons
+    html += '<div class="pagination-buttons">';
+
+    // Previous button
+    const prevDisabled = page <= 1;
+    html += `<button class="pagination-btn" ${prevDisabled ? 'disabled' : ''} onclick="goToPage('${type}', ${page - 1})">← Prev</button>`;
+
+    // Page numbers (show if more than 1 page)
+    if (total_pages > 1) {
+        const maxVisible = 5;
+        let start = Math.max(1, page - Math.floor(maxVisible / 2));
+        let end = Math.min(total_pages, start + maxVisible - 1);
+
+        if (end - start + 1 < maxVisible) {
+            start = Math.max(1, end - maxVisible + 1);
+        }
+
+        if (start > 1) {
+            html += `<button class="pagination-btn" onclick="goToPage('${type}', 1)">1</button>`;
+            if (start > 2) html += '<span class="pagination-ellipsis">...</span>';
+        }
+
+        for (let i = start; i <= end; i++) {
+            html += `<button class="pagination-btn ${i === page ? 'active' : ''}" onclick="goToPage('${type}', ${i})">${i}</button>`;
+        }
+
+        if (end < total_pages) {
+            if (end < total_pages - 1) html += '<span class="pagination-ellipsis">...</span>';
+            html += `<button class="pagination-btn" onclick="goToPage('${type}', ${total_pages})">${total_pages}</button>`;
+        }
+    } else {
+        // Single page - just show page 1
+        html += '<button class="pagination-btn active" disabled>1</button>';
     }
 
-    let html = '<button ' + (page === 1 ? 'disabled' : '') + ' onclick="goToPage(\'' + type + '\', ' + (page - 1) + ')">←</button>';
+    // Next button
+    const nextDisabled = page >= total_pages;
+    html += `<button class="pagination-btn" ${nextDisabled ? 'disabled' : ''} onclick="goToPage('${type}', ${page + 1})">Next →</button>`;
 
-    // Page numbers
-    const maxVisible = 5;
-    let start = Math.max(1, page - Math.floor(maxVisible / 2));
-    let end = Math.min(total_pages, start + maxVisible - 1);
-
-    if (end - start + 1 < maxVisible) {
-        start = Math.max(1, end - maxVisible + 1);
-    }
-
-    if (start > 1) {
-        html += '<button onclick="goToPage(\'' + type + '\', 1)">1</button>';
-        if (start > 2) html += '<span>...</span>';
-    }
-
-    for (let i = start; i <= end; i++) {
-        html += `<button class="${i === page ? 'active' : ''}" onclick="goToPage('${type}', ${i})">${i}</button>`;
-    }
-
-    if (end < total_pages) {
-        if (end < total_pages - 1) html += '<span>...</span>';
-        html += `<button onclick="goToPage('${type}', ${total_pages})">${total_pages}</button>`;
-    }
-
-    html += '<button ' + (page === total_pages ? 'disabled' : '') + ' onclick="goToPage(\'' + type + '\', ' + (page + 1) + ')">→</button>';
+    html += '</div></div>';
 
     container.innerHTML = html;
+}
+
+function changePageSize(type, size) {
+    state[type].pageSize = parseInt(size);
+    state[type].page = 1; // Reset to first page when changing page size
+    goToPage(type, 1);
 }
 
 function goToPage(type, page) {
@@ -1109,6 +1142,9 @@ function goToPage(type, page) {
             break;
         case 'inventory':
             loadInventory();
+            break;
+        case 'logs':
+            loadLogs();
             break;
     }
 }
