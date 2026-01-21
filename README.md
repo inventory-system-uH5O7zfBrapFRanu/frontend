@@ -214,17 +214,6 @@ systemApi.getMetrics()
 | Activity Log | `logs` | System activity logs |
 | System Monitor | `system` | Health & resource monitoring |
 
-## � Unit Kompetensi SKKNI yang Diimplementasikan
-
-| Kode Unit | Judul | Implementasi |
-|-----------|-------|--------------|
-| J.620100.005.02 | Mengimplementasikan User Interface | Complete dashboard & management UI |
-| J.620100.006.01 | Merancang user experience | UX dengan feedback visual, loading states |
-| J.620100.016.01 | Menulis kode sesuai guidelines | Clean code JavaScript, modular structure |
-| J.620100.019.02 | Menggunakan library pre-existing | Fetch API, modern CSS features |
-| J.620100.044.01 | Menerapkan alert notification | Toast notifications, system alerts |
-| J.620100.045.01 | Melakukan pemantauan resource | System monitor page with real-time data |
-
 ## 🛠️ Tech Stack
 
 - **HTML5**: Semantic markup
