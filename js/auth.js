@@ -397,7 +397,10 @@ function updateAuthUI() {
 
     if (user) {
         if (userNameEl) userNameEl.textContent = user.full_name || user.username;
-        if (userEmailEl) userEmailEl.textContent = user.email;
+        if (userEmailEl) {
+            userEmailEl.textContent = user.email;
+            userEmailEl.title = user.email; // Show full email on hover
+        }
     }
 
     if (logoutBtn) {

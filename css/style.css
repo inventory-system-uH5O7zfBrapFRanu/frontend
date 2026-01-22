@@ -198,12 +198,16 @@ body {
     animation: pulse 2s infinite;
 }
 
-.status-dot.online {
+.status-dot.online,
+.api-status.online .status-dot {
     background: var(--success);
+    animation: none;
 }
 
-.status-dot.offline {
+.status-dot.offline,
+.api-status.offline .status-dot {
     background: var(--danger);
+    animation: none;
 }
 
 @keyframes pulse {

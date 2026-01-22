@@ -607,6 +607,28 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 120px;
+    cursor: default;
+}
+
+.user-email:hover {
+    overflow: visible;
+    position: relative;
+}
+
+.user-email:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
 }
 
 /* ===== Button Styles Extended ===== */

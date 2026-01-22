@@ -178,12 +178,15 @@ async function checkApiHealth() {
     const indicator = document.getElementById('apiStatus');
     if (!indicator) return;
 
+    const statusText = indicator.querySelector('span:last-child') || indicator;
+
     try {
         const health = await fetch(HEALTH_URL);
         if (health.ok) {
             indicator.classList.remove('offline');
             indicator.classList.add('online');
             indicator.title = 'API Online';
+            statusText.textContent = 'API Online';
         } else {
             throw new Error('API not healthy');
         }
@@ -191,6 +194,7 @@ async function checkApiHealth() {
         indicator.classList.remove('online');
         indicator.classList.add('offline');
         indicator.title = 'API Offline';
+        statusText.textContent = 'API Offline';
     }
 }
 
