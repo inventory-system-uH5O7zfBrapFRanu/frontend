@@ -733,9 +733,44 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Scripts -->
+    <!-- API Client -->
     <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
+
+    <!-- Module: Utilities (must load first) -->
+    <script src="js/modules/utils.js"></script>
+
+    <!-- Main App State & Navigation -->
     <script src="js/app.js"></script>
+
+    <!-- Module: Dashboard -->
+    <script src="js/modules/dashboard.js"></script>
+
+    <!-- Module: Products -->
+    <script src="js/modules/products.js"></script>
+
+    <!-- Module: Categories -->
+    <script src="js/modules/categories.js"></script>
+
+    <!-- Module: Suppliers -->
+    <script src="js/modules/suppliers.js"></script>
+
+    <!-- Module: Inventory -->
+    <script src="js/modules/inventory.js"></script>
+
+    <!-- Module: Activity Logs -->
+    <script src="js/modules/logs.js"></script>
+
+    <!-- Module: System Monitor -->
+    <script src="js/modules/system.js"></script>
+
+    <!-- Module: Modals -->
+    <script src="js/modules/modals.js"></script>
+
+    <!-- Authentication -->
+    <script src="js/auth.js"></script>
+
+    <!-- Initialization (must load LAST) -->
+    <script src="js/modules/init.js"></script>
 </body>
 
 </html>
