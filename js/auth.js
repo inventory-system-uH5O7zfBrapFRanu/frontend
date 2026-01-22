@@ -264,7 +264,7 @@ function initLoginForm() {
 
         try {
             const user = await AuthManager.login(username, password);
-            showToast('Login berhasil!', 'success');
+            showToast('success', 'Login Berhasil', 'Selamat datang!');
 
             // Hide login modal and show dashboard
             hideLoginModal();
@@ -276,9 +276,10 @@ function initLoginForm() {
                 loadDashboard();
             }
         } catch (error) {
-            errorDiv.textContent = error.message;
+            const errorMessage = error.message || error.detail || 'Login gagal. Silakan coba lagi.';
+            errorDiv.textContent = errorMessage;
             errorDiv.style.display = 'block';
-            showToast(error.message, 'error');
+            showToast('error', 'Login Gagal', errorMessage);
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Login';
@@ -315,14 +316,14 @@ function initRegisterForm() {
                 full_name: fullName,
             });
 
-            showToast('Registrasi berhasil! Silakan login.', 'success');
+            showToast('success', 'Registrasi Berhasil', 'Silakan login dengan akun baru.');
 
             // Switch to login form
             showLoginForm();
         } catch (error) {
             errorDiv.textContent = error.message;
             errorDiv.style.display = 'block';
-            showToast(error.message, 'error');
+            showToast('error', 'Registrasi Gagal', error.message || 'Terjadi kesalahan');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Register';
@@ -403,7 +404,7 @@ function updateAuthUI() {
         logoutBtn.addEventListener('click', async () => {
             await AuthManager.logout();
             showAuthPage();
-            showToast('Logged out successfully', 'info');
+            showToast('info', 'Logout', 'Anda telah keluar dari sistem');
         });
     }
 }

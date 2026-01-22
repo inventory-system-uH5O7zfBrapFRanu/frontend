@@ -8,8 +8,8 @@
  * Modul ini menangani semua komunikasi dengan backend API.
  */
 
-const API_BASE_URL = 'http://129.212.228.132:8000/api/v1';
-const HEALTH_URL = 'http://129.212.228.132:8000/health';
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+const HEALTH_URL = 'http://localhost:8000/health';
 
 /**
  * API Client Class
