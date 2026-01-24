@@ -193,7 +193,7 @@ async function saveProduct(event) {
             showToast('success', 'Success', 'Product updated successfully');
         } else {
             const initialStock = parseInt(document.getElementById('productInitialStock').value) || 0;
-            await productsApi.create(formData, initialStock);
+            await productsApi.create(formData, { initial_stock: initialStock });
             showToast('success', 'Success', 'Product created successfully');
         }
 

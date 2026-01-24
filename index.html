@@ -600,8 +600,8 @@
                     </div>
                     <div class="form-row" id="stockFields">
                         <div class="form-group">
-                            <label for="initialStock">Initial Stock</label>
-                            <input type="number" id="initialStock" name="initial_stock" min="0" value="0">
+                            <label for="productInitialStock">Initial Stock</label>
+                            <input type="number" id="productInitialStock" name="initial_stock" min="0" value="0">
                         </div>
                     </div>
                 </div>
@@ -686,23 +686,26 @@
             </div>
             <form id="stockForm" onsubmit="adjustStock(event)">
                 <div class="modal-body">
-                    <div class="stock-info" id="stockInfo"></div>
+                    <div class="stock-info" id="stockInfo">
+                        <p><strong>Product:</strong> <span id="stockProductName">-</span></p>
+                        <p><strong>Current Stock:</strong> <span id="stockCurrentQuantity">0</span></p>
+                    </div>
                     <div class="form-group">
-                        <label for="adjustmentType">Adjustment Type *</label>
-                        <select id="adjustmentType" name="adjustment_type" required>
+                        <label for="stockAdjustType">Adjustment Type *</label>
+                        <select id="stockAdjustType" name="adjustment_type" required>
                             <option value="add">Add Stock</option>
                             <option value="remove">Remove Stock</option>
                             <option value="set">Set Quantity</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="adjustmentAmount">Amount *</label>
-                        <input type="number" id="adjustmentAmount" name="amount" required min="1"
+                        <label for="stockAdjustAmount">Amount *</label>
+                        <input type="number" id="stockAdjustAmount" name="amount" required min="1"
                             placeholder="Enter amount">
                     </div>
                     <div class="form-group">
-                        <label for="adjustmentReason">Reason</label>
-                        <input type="text" id="adjustmentReason" name="reason" placeholder="Reason for adjustment">
+                        <label for="stockAdjustReason">Reason</label>
+                        <input type="text" id="stockAdjustReason" name="reason" placeholder="Reason for adjustment">
                     </div>
                 </div>
                 <div class="modal-footer">

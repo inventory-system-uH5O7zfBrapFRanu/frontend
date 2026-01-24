@@ -403,7 +403,8 @@ function updateAuthUI() {
         }
     }
 
-    if (logoutBtn) {
+    if (logoutBtn && !logoutBtn.dataset.listenerAttached) {
+        logoutBtn.dataset.listenerAttached = 'true';
         logoutBtn.addEventListener('click', async () => {
             await AuthManager.logout();
             showAuthPage();

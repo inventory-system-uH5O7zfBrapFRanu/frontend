@@ -8,12 +8,12 @@
  * Modul ini menangani semua komunikasi dengan backend API.
  */
 
-const API_BASE_URL = '/api/v1';
-const HEALTH_URL = '/health';
+// const API_BASE_URL = '/api/v1';
+// const HEALTH_URL = '/health';
 
 // Untuk Local
-// const API_BASE_URL = 'http://129.212.228.132:8000/api/v1';
-// const HEALTH_URL = 'http://129.212.228.132:8000/health';
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+const HEALTH_URL = 'http://localhost:8000/health';
 
 /**
  * API Client Class
@@ -293,3 +293,23 @@ function getStockStatusText(status) {
             return 'Unknown';
     }
 }
+
+// Export to global scope for use by other modules
+window.API_BASE_URL = API_BASE_URL;
+window.HEALTH_URL = HEALTH_URL;
+window.ApiError = ApiError;
+window.api = api;
+window.categoriesApi = categoriesApi;
+window.suppliersApi = suppliersApi;
+window.productsApi = productsApi;
+window.inventoryApi = inventoryApi;
+window.logsApi = logsApi;
+window.healthApi = healthApi;
+window.systemApi = systemApi;
+window.formatCurrency = formatCurrency;
+window.formatDate = formatDate;
+window.formatDateTime = formatDateTime;
+window.getStockStatusClass = getStockStatusClass;
+window.getStockStatusText = getStockStatusText;
+
+console.log('[API] api.js loaded successfully');

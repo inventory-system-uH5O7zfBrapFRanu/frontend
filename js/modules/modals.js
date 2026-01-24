@@ -7,17 +7,6 @@
  * Module ini menangani semua fungsi modal (add, edit, delete).
  */
 
-// Reference to elements (initialized by main app)
-let elements = null;
-
-/**
- * Initialize elements reference
- * @param {object} els - DOM elements object
- */
-function initModalElements(els) {
-    elements = els;
-}
-
 /**
  * Open add modal for specific type
  * @param {string} type - Modal type (addProduct, addCategory, addSupplier)
@@ -135,4 +124,5 @@ window.openModal = openModal;
 window.closeModal = closeModal;
 window.confirmDelete = confirmDelete;
 window.executeDelete = executeDelete;
-window.initModalElements = initModalElements;
+
+console.log('[Modals] modals.js loaded successfully, openModal:', typeof openModal);
